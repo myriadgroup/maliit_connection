@@ -108,7 +108,7 @@ void MInputContext::reset()
     imServer->reset(hadPreedit);
 }
 
-void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool force)
+void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool selected, bool force)
 {
     // Clear preedit String on im server side to avoid showing up
     // on new edit box
@@ -117,7 +117,7 @@ void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd,
     }
 
     bool changed = (force || isFocusChanged || (type != contentType) || (hiddenText != passwd)
-                   || (text != mSurroundingText) || (cursor != mCursorPos));
+                   || (text != mSurroundingText) || (cursor != mCursorPos) || (mTextSelected != selected));
     if (!changed) {
         if (debug) qDebug() << "Input type is NOT changed, return!";
         return;
@@ -127,6 +127,7 @@ void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd,
     hiddenText = passwd;
     mSurroundingText = text;
     mCursorPos = cursor;
+    mTextSelected = selected;
 
     QMap<QString, QVariant> stateInfo;
     stateInfo["focusState"] = true;
@@ -134,6 +135,7 @@ void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd,
     stateInfo["hiddenText"] = hiddenText;
     stateInfo["surroundingText"] = mSurroundingText;
     stateInfo["cursorPosition"] = mCursorPos;
+    stateInfo["hasSelection"] = mTextSelected;
 
     imServer->updateWidgetInformation(stateInfo, isFocusChanged);
 }

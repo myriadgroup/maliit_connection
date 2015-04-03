@@ -44,7 +44,7 @@ public:
     Q_INVOKABLE void showInputPanel();
     Q_INVOKABLE void hideInputPanel();
     Q_INVOKABLE void updateServerOrientation(MInputContext::OrientationAngle angle);
-    Q_INVOKABLE void updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool forced = false);
+    Q_INVOKABLE void updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool selected, bool forced = false);
 
     virtual void onHideInputMethod() = 0;
     virtual void onCommitString(const QString &string) = 0;
@@ -104,6 +104,7 @@ private:
     QString mSurroundingText;
     QString preedit;
     int mCursorPos;
+    bool mTextSelected;
     MInputContext::OrientationAngle mAngle;
 };
 
