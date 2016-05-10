@@ -13,7 +13,7 @@
  */
 
 /*
- * Copyright 2013-2014 Myriad Group AG. All Rights Reserved.
+ * Copyright 2013-2015 Myriad Group AG. All Rights Reserved.
  */
 
 #ifndef MINPUTCONTEXT_H
@@ -44,7 +44,7 @@ public:
     Q_INVOKABLE void showInputPanel();
     Q_INVOKABLE void hideInputPanel();
     Q_INVOKABLE void updateServerOrientation(MInputContext::OrientationAngle angle);
-    Q_INVOKABLE void updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool selected, bool forced = false);
+    Q_INVOKABLE void updateStateInfo(QMap<QString, QVariant> stateInfo, bool focusChanged);
 
     virtual void onHideInputMethod() = 0;
     virtual void onCommitString(const QString &string) = 0;
@@ -53,6 +53,7 @@ public:
     virtual void onKeyEvent(int key, bool down)= 0;
     virtual void onUpdateInputMethodArea(int x, int y, int w, int h) = 0;
     virtual void onConnectionReady() = 0;
+    virtual QMap<QString, QVariant> getStateInformation() = 0;
 
 public Q_SLOTS:
     // Hooked up to the input method server
@@ -99,12 +100,7 @@ private:
     DBusServerConnection *imServer;
     bool active; // is connection active
     bool mIMServerRestart; // Maliit server crashes/restart
-    int contentType;
-    int hiddenText;
-    QString mSurroundingText;
     QString preedit;
-    int mCursorPos;
-    bool mTextSelected;
     MInputContext::OrientationAngle mAngle;
 };
 

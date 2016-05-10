@@ -16,7 +16,7 @@
  */
 
 /*
- * Copyright 2013-2014 Myriad Group AG. All Rights Reserved.
+ * Copyright 2013-2015 Myriad Group AG. All Rights Reserved.
  */
 
 #include "minputcontext.h"
@@ -29,9 +29,7 @@ MInputContext::MInputContext()
       active(false),
       inputPanelState(InputPanelHidden),
       mIMServerRestart(false),
-      mAngle(Angle0),
-      mSurroundingText(""),
-      mCursorPos(0)
+      mAngle(Angle0)
 {
     if (debug) qDebug() << "MInputContext()";
 
@@ -108,36 +106,15 @@ void MInputContext::reset()
     imServer->reset(hadPreedit);
 }
 
-void MInputContext::updateEditorInfo(bool isFocusChanged, int type, bool passwd, QString text, int cursor, bool selected, bool force)
+void MInputContext::updateStateInfo(QMap<QString, QVariant> stateInfo, bool focusChanged)
 {
     // Clear preedit String on im server side to avoid showing up
     // on new edit box
-    if (isFocusChanged) {
+    if (focusChanged) {
         reset();
     }
 
-    bool changed = (force || isFocusChanged || (type != contentType) || (hiddenText != passwd)
-                   || (text != mSurroundingText) || (cursor != mCursorPos) || (mTextSelected != selected));
-    if (!changed) {
-        if (debug) qDebug() << "Input type is NOT changed, return!";
-        return;
-    }
-
-    contentType = type;
-    hiddenText = passwd;
-    mSurroundingText = text;
-    mCursorPos = cursor;
-    mTextSelected = selected;
-
-    QMap<QString, QVariant> stateInfo;
-    stateInfo["focusState"] = true;
-    stateInfo["contentType"] = contentType;
-    stateInfo["hiddenText"] = hiddenText;
-    stateInfo["surroundingText"] = mSurroundingText;
-    stateInfo["cursorPosition"] = mCursorPos;
-    stateInfo["hasSelection"] = mTextSelected;
-
-    imServer->updateWidgetInformation(stateInfo, isFocusChanged);
+    imServer->updateWidgetInformation(stateInfo, focusChanged);
 }
 
 void MInputContext::onInvokeAction(const QString &action, const QKeySequence &sequence)
@@ -249,7 +226,9 @@ void MInputContext::updateInputMethodArea(const QRect &rect)
 void MInputContext::setGlobalCorrectionEnabled(bool enabled)
 {
     if (debug) qDebug() << "setGlobalCorrectionEnabled(), enabled = " << enabled;
-    updateEditorInfo(true, contentType, hiddenText, mSurroundingText.toUtf8().data(), mCursorPos, true);
+
+    QMap<QString, QVariant> stateInformation = getStateInformation();
+    updateStateInfo(stateInformation, true);
 }
 
 void MInputContext::onDBusDisconnection()
@@ -267,7 +246,9 @@ void MInputContext::onDBusConnection()
     active = false;
     onConnectionReady();
     if (mIMServerRestart && inputPanelState == InputPanelShown) {
-        updateEditorInfo(true, contentType, hiddenText, mSurroundingText.toUtf8().data(), mCursorPos, true);
+        QMap<QString, QVariant> stateInformation = getStateInformation();
+        updateStateInfo(stateInformation, true);
+
         showInputPanel();
         mIMServerRestart = false;
     }
