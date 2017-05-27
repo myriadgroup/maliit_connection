@@ -16,7 +16,7 @@
  */
 
 /*
- * Copyright 2013-2015 Myriad Group AG. All Rights Reserved.
+ * Copyright 2013-2017 Myriad Group AG. All Rights Reserved.
  */
 
 #include "minputcontext.h"
@@ -173,7 +173,12 @@ void MInputContext::imInitiatedHide()
 void MInputContext::commitString(const QString &string, int replacementStart,
                                  int replacementLength, int cursorPos)
 {
-    if (debug) qDebug() << "commitString()";
+    if (debug) {
+        qDebug() << "commitString()" << "commit:" << string
+                 << ", replacementStart:" << replacementStart
+                 << ", replacementLength:" << replacementLength
+                 << ", cursorPos:" << cursorPos;
+    }
 
     if (imServer->pendingResets()) {
         return;
@@ -181,7 +186,7 @@ void MInputContext::commitString(const QString &string, int replacementStart,
 
     preedit.clear();
 
-    onCommitString(string);
+    onCommitString(string, replacementStart, replacementLength, cursorPos);
 }
 
 void MInputContext::updatePreedit(const QString &string, const QList<Maliit::PreeditTextFormat> &preeditFormats,
@@ -200,7 +205,7 @@ void MInputContext::updatePreedit(const QString &string, const QList<Maliit::Pre
 
     preedit = string;
 
-    onUpdatePreedit(string, replacementStart, replacementLength);
+    onUpdatePreedit(string, replacementStart, replacementLength, cursorPos);
 }
 
 void MInputContext::keyEvent(int type, int key, int modifiers, const QString &text,

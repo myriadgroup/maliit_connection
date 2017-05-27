@@ -13,7 +13,7 @@
  */
 
 /*
- * Copyright 2013-2015 Myriad Group AG. All Rights Reserved.
+ * Copyright 2013-2017 Myriad Group AG. All Rights Reserved.
  */
 
 #ifndef MINPUTCONTEXT_H
@@ -47,9 +47,10 @@ public:
     Q_INVOKABLE void updateStateInfo(QMap<QString, QVariant> stateInfo, bool focusChanged);
 
     virtual void onHideInputMethod() = 0;
-    virtual void onCommitString(const QString &string) = 0;
+    virtual void onCommitString(const QString &string,
+                       int replacementStart, int replacementLength, int cursorPos) = 0;
     virtual void onUpdatePreedit(const QString &string,
-                       int replacementStart = 0, int replacementLength = 0) = 0;
+                       int replacementStart, int replacementLength, int cursorPos) = 0;
     virtual void onKeyEvent(int key, bool down)= 0;
     virtual void onUpdateInputMethodArea(int x, int y, int w, int h) = 0;
     virtual void onConnectionReady() = 0;
